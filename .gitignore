@@ -38,3 +38,4 @@ env/
 .cache/
 *.dylib
 *.so
+.env.example
