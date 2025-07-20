@@ -369,10 +369,32 @@ class SimpleMCPServer:
 def main():
     """Función principal"""
     try:
+        # Debug completo de variables de entorno
+        print("🔍 DEBUG: TODAS las variables de entorno:")
+        for key, value in sorted(os.environ.items()):
+            if any(word in key.upper() for word in ['API', 'TOKEN', 'KEY', 'PORT', 'PATH']):
+                masked_value = value[:8] + "..." + value[-4:] if len(value) > 12 else value
+                print(f"   {key}: {masked_value}")
+        
+        print(f"\n🔍 DEBUG: Variables específicas:")
+        print(f"   os.environ.get('OPENAI_API_KEY'): {bool(os.environ.get('OPENAI_API_KEY'))}")
+        print(f"   os.getenv('OPENAI_API_KEY'): {bool(os.getenv('OPENAI_API_KEY'))}")
+        print(f"   'OPENAI_API_KEY' in os.environ: {'OPENAI_API_KEY' in os.environ}")
+        
+        # Mostrar las primeras 10 variables para ver qué está disponible
+        print(f"\n🔍 DEBUG: Primeras variables disponibles:")
+        for i, (key, value) in enumerate(os.environ.items()):
+            if i < 10:
+                print(f"   {i+1}. {key}: {value[:20]}...")
+        
+        print(f"\n🔧 Total variables de entorno: {len(os.environ)}")
+        
         server = SimpleMCPServer()
         server.run()
     except Exception as e:
         print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()
