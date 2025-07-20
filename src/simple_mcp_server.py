@@ -16,10 +16,13 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 try:
     from config.settings import settings
+    print("✅ Configuración cargada desde config.settings")
 except ImportError:
     # Fallback para deployment
     import os
     from dotenv import load_dotenv
+    
+    # Intentar cargar .env si existe
     load_dotenv()
     
     class Settings:
@@ -28,6 +31,7 @@ except ImportError:
         MCP_PORT = int(os.getenv("PORT", 8000))
     
     settings = Settings()
+    print("✅ Configuración cargada desde variables de entorno")
 
 # Modelos Pydantic para el MCP
 class MCPRequest(BaseModel):
@@ -49,10 +53,25 @@ class SimpleAgent:
     """Agente simplificado sin vector store pesado"""
     
     def __init__(self):
+        print(f"🔍 Verificando OPENAI_API_KEY...")
+        print(f"   - Variable de entorno: {bool(os.getenv('OPENAI_API_KEY'))}")
+        print(f"   - Settings: {bool(settings.OPENAI_API_KEY)}")
+        
         if not settings.OPENAI_API_KEY:
+            error_msg = """
+❌ OPENAI_API_KEY no configurada
+            
+Soluciones:
+1. En Railway > Variables, agrega: OPENAI_API_KEY=sk-proj-tu_key
+2. Verifica que la variable esté guardada correctamente
+3. Redeploy el proyecto
+            """
+            print(error_msg)
             raise ValueError("OPENAI_API_KEY no configurada")
         
         self.api_key = settings.OPENAI_API_KEY
+        print(f"✅ API Key configurada correctamente (sk-...{self.api_key[-8:]})")
+        
         self.base_url = "https://api.openai.com/v1"
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -61,6 +80,7 @@ class SimpleAgent:
         
         # Datos de la ley (simplificado para demo)
         self.law_data = self.load_law_summary()
+        print("✅ Datos de la ley cargados")
     
     def load_law_summary(self) -> Dict[str, str]:
         """Carga un resumen de la ley para demos"""
@@ -333,8 +353,16 @@ class SimpleMCPServer:
         
         print(f"🚀 Iniciando servidor MCP ligero en http://{host}:{port}")
         print(f"📋 Documentación disponible en http://{host}:{port}/docs")
+        print(f"🔑 OpenAI API Key configurada: {bool(settings.OPENAI_API_KEY)}")
+        print(f"🌐 Health check: http://{host}:{port}/health")
         
-        uvicorn.run(self.app, host=host, port=port, log_level="info")
+        uvicorn.run(
+            self.app, 
+            host=host, 
+            port=port, 
+            log_level="info",
+            access_log=True
+        )
 
 def main():
     """Función principal"""
