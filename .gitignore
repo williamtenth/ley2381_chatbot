@@ -27,3 +27,14 @@ Thumbs.db
 
 # API Keys (importante!)
 .env
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env/
+
+# Large ML libraries cache
+.cache/
+*.dylib
+*.so
