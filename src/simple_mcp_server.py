@@ -14,24 +14,26 @@ import uvicorn
 # Agregar el directorio raíz al path
 sys.path.append(str(Path(__file__).parent.parent))
 
-try:
-    from config.settings import settings
-    print("✅ Configuración cargada desde config.settings")
-except ImportError:
-    # Fallback para deployment
-    import os
-    from dotenv import load_dotenv
-    
-    # Intentar cargar .env si existe
+# Forzar uso de variables de entorno en deployment
+import os
+from dotenv import load_dotenv
+
+# Solo cargar .env si existe (desarrollo local)
+if os.path.exists('.env'):
     load_dotenv()
-    
-    class Settings:
-        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-        MCP_HOST = "0.0.0.0"
-        MCP_PORT = int(os.getenv("PORT", 8000))
-    
-    settings = Settings()
-    print("✅ Configuración cargada desde variables de entorno")
+    print("✅ Archivo .env cargado (desarrollo local)")
+else:
+    print("ℹ️ No hay archivo .env, usando variables de sistema (deployment)")
+
+class Settings:
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    MCP_HOST = "0.0.0.0"
+    MCP_PORT = int(os.getenv("PORT", 8000))
+
+settings = Settings()
+print(f"🔧 OPENAI_API_KEY desde entorno: {bool(settings.OPENAI_API_KEY)}")
+
+# NO importar config.settings para evitar conflictos
 
 # Modelos Pydantic para el MCP
 class MCPRequest(BaseModel):
