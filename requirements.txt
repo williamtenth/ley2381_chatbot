@@ -1,13 +1,25 @@
-fastapi>=0.100.0
-uvicorn[standard]>=0.30.0
-pydantic>=2.0.0
-python-dotenv>=1.0.0
-requests>=2.30.0
-loguru>=0.7.0
-chromadb>=0.5.0
-sentence-transformers>=3.0.0
-numpy>=1.24.0
-pandas>=2.0.0
-python-telegram-bot>=20.0
-pdfplumber>=0.10.0
-PyPDF2>=3.0.0
+# API y Web Framework (esenciales)
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+requests==2.31.0
+
+# Utilidades básicas
+python-dotenv==1.0.0
+loguru==0.7.2
+
+# Vector store LIGERO (sin dependencies pesadas)
+chromadb==0.4.24
+
+# Embeddings modelo ligero
+sentence-transformers==2.2.2
+
+# Procesamiento PDF
+PyPDF2==3.0.1
+
+# Librerías básicas
+numpy==1.24.4
+pandas==2.0.3
+
+# Telegram bot (solo si lo necesitas en Railway)
+# python-telegram-bot==20.7
